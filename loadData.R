@@ -14,8 +14,8 @@ if (!file.exists("data/summarySCC_PM25.rds") | !file.exists("data/Source_Classif
 
 #Load data into data.frame, then wrap in data.table, then dplyr's data.table
 NEI <- readRDS("data//summarySCC_PM25.rds")
-NEI <- data.table(dat)
-NEI <- tbl_dt(dat)
+NEI <- data.table(NEI)
+NEI <- tbl_dt(NEI)
 
 #Same operation with index of data
 SCC <- tbl_dt(data.table(readRDS("data//Source_Classification_Code.rds")))
