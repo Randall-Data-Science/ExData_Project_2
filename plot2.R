@@ -20,7 +20,7 @@ good.obs.id <- NEI.p2[year == 1999, obs.id] %>%
 # only keep observation types measured in all years and in Baltimore
 NEI.p2.aY <- NEI.p2 %>% 
     filter(obs.id %in% good.obs.id) %>%
-    filter(fips == "24510")
+    filter(fips == "24510") #FIPS code for Baltimore 
 
 # Average multiple measurements of a single type within one year together
 NEI.p2.aY <- NEI.p2.aY %>% group_by(obs.id.year)
@@ -39,7 +39,7 @@ p2.data <- NEI.p2.aY %>%
 
 png(filename = "plot2.png",width = 600, height = 400)
 
-plot(p2.data, type = "b")
+plot(p2.data, type = "b", xaxp = c(1999, 2008, 3))
 title(main = "Levels of PM_2.5 1999-2008 \nin BALTIMORE")
 
 dev.off()
