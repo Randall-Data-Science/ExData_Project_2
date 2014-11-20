@@ -1,8 +1,10 @@
 #Check libraries available, and load in order
 if (!require("data.table")) install.packages("data.table")
 if (!require("dplyr"))      install.packages("dplyr")
+if (!require("tidyr"))      install.packages("tidyr")
 library(data.table)
 library(dplyr)
+library(tidyr)
 
 #Confirm existence of data files, download&extact if necessary
 if (!file.exists("data/summarySCC_PM25.rds") | !file.exists("data/Source_Classification_Code.rds")) {
