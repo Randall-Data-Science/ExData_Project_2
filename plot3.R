@@ -3,6 +3,7 @@ library(data.table)
 library(dplyr)
 library(tidyr) 
 library(ggplot2)
+# library(grid) # for unit() function
 
 #load data sets if not already in memory
 if (!exists("NEI") | !exists("SCC")) source("loadData.R")
@@ -37,18 +38,53 @@ p3.data <- NEI.p3.aY %>%
     group_by(year, type) %>%
     summarise(Emissions=mean(Emissions))
 
+png(filename = "plot3.png",width = 800, height = 600)
 
-# 
-# p3.data2 <- spread(data = p3.data,key = type,value = Emissions)
-# setnames(x = p3.data2, c("year", "non.road", "non.point", "point"))
-# 
-# ggplot(data = p3.data2, aes(y= non.road, x=year)) + 
-#     geom_point(aes(color = non.road)) + geom_point(aes(y=non.point)) +
-#     geom_point(aes(y = point))
-# 
+# Customization of plotting for the sake of experimentation
 
-png(filename = "plot3.png",width = 600, height = 400)
+ggplot(p3.data, aes(x = year, y = Emissions)) + 
+    labs(title = "PM_2.5 Emissions by Type of Measurement Station", x = "Year") +
+    geom_line(mapping = aes(group = type, color = type), size = 1.0) + 
+    geom_point(color = hsv(s = 0, v = 0.9), size = 7.5) +
+    geom_point(mapping = aes(color = type), size = 5, shape = 16) +
+    geom_point(color = hsv(s = 0, v = 0.9), size = 3) +
+    xlim("", "1999", "2002", "2005","2008") +
+    ylim(-10, 130) +
+    # data point labels
+    geom_text(aes(label = sprintf("%.2f", Emissions), color = type),
+              hjust = -0.5, vjust = -1, size = 3.5) + 
+    # measurement type
+    geom_text(data = p3.data[year == "1999"], 
+              aes(label = type, color = type), 
+              hjust = 1.15, vjust = -1,  size = 5, fontface = "bold") +
+    # percentage change over time period annotation
+    geom_text(data = p3.data[year == "1999"], 
+              aes(label = sprintf(
+                  "%.1f%%\ndecrease", ( 
+                      100 - 
+                          100 * p3.data[year=="2008" & type==type]$Emissions /
+                          p3.data[year=="1999" & type==type]$Emissions
+                  )), 
+                  color = type), 
+              hjust = 1.25, vjust = 1,  size = 4.5) +
+    scale_colour_discrete(l = 50, h.start = 0) +
+    theme(legend.position = "none")
 
-ggplot(p3.data, aes(x = year, y = Emissions)) + geom_point(aes(color=type))
-     
 dev.off()
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#                          Notes on positioning (in theory)
+#  --------------------------------------------------------------------------
+#
+#   hjust:  0-left  0.5-center  1-right
+#   vjust:  0-bottom  0.5-middle  1-top
+#
+#   move:   position = position_dodge(width= ,height= )
+#
+#  --------------------------------------------------------------------------
+#
+#   However, since the positioning does not seem to work, and hjust/vjust, 
+#    allow values outside of [0,1] simply guessing seems to work
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
