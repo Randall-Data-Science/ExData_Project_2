@@ -67,6 +67,10 @@ ggplot(p3.data, aes(x = year, y = Emissions)) +
                   )), 
                   color = type), 
               hjust = 1.25, vjust = 1,  size = 4.5) +
+    annotate(geom = "text", x = "2005", y = 100, hjust = 0, label = 
+"Note that no ON-ROAD locations
+were consistently measured
+across all four years") +
     scale_colour_discrete(l = 50, h.start = 0) +
     theme(legend.position = "none")
 
