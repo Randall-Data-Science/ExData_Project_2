@@ -105,22 +105,21 @@ split.screen(figs = c(2, 1), screen = 2) # Two plots in the second column
 screen(3)
 with(NEI.p4.coal.aY,
      boxplot((Emissions+1) ~ year, log="y", 
-             title = "Distribution of Coal-Related\nEmissions",
+             main = "Distribution of Coal-Related\nEmissions",
              ylab = "Emissions")
 )
 
 screen(4)
 with(NEI.p4.small,
-    plot(Mean.Emissions ~ Year, type = "b"
-         title = "Mean Emissions Measured by Year",
+    plot(Mean.Emissions ~ Year, type = "b",
+         main = "Mean Emissions Measured by Year",
          ylab = "Emissions") 
 )
 
 screen(5)
-
 with(NEI.p4.small,
      plot(y = Median.Emissions, x = Year, type = "b",
-          title = "Median Emissions Measured by Year",
+          main = "Median Emissions Measured by Year",
           ylab = "Emissions")
 )
 
