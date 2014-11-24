@@ -25,14 +25,6 @@ scc.good <- SCC %>%
                  perl = TRUE, ignore.case = TRUE, x = SCC.Level.One)) %>%
     select(SCC)
 
-# scc.good <- intersect(
-#     x = scc.good, 
-#     y = SCC %>%
-#         #Matching terms
-#         filter(grepl(pattern = "Vehicles", 
-#                      perl = TRUE, ignore.case = TRUE, x = SCC.Level.Four)) %>%
-#         select(SCC)
-# )
 
 # convert single column data.table/data.frame factors into array of character strings
 scc.good <- as.character(scc.good$SCC) 
@@ -70,25 +62,29 @@ png(filename = "plot6.png",width = 800, height = 600)
     par(mfcol=c(2,2))
     
     with(NEI.balt,
-        plot(Mean.Emissions ~ Year, type = "l",
+        plot(Mean.Emissions ~ Year, type = "l", 
+             ylim = c(0, 10), xlim = c(2002, 2008), 
              main = "Baltimore Auto Emissions (Mean)",
              ylab = "MEAN Emissions") 
     )
     
     with(NEI.balt,
          plot(y = Median.Emissions, x = Year, type = "l",
+              ylim = c(0, 1.0), xlim = c(2002, 2008), 
               main = "Baltimore Auto Emissions",
               ylab = "MEDIAN Emissions")
     )
     
     with(NEI.la,
-         plot(Mean.Emissions ~ Year, type = "l",
+         plot(Mean.Emissions ~ Year, type = "l", 
+              ylim = c(0, 10), xlim = c(2002, 2008), 
               main = "Los Angelas Auto Emissions (Mean)",
               ylab = "MEAN Emissions") 
     )
     
     with(NEI.la,
          plot(y = Median.Emissions, x = Year, type = "l",
+              ylim = c(0, 1.0), xlim = c(2002, 2008), 
               main = "Los Angelas Auto Emissions (Mean)",
               ylab = "MEDIAN Emissions") 
     )
