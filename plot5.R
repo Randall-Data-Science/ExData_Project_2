@@ -20,19 +20,11 @@ NEI.p5 <- NEI %>%
 # Develop a list of SCCs.
 
 scc.good <- SCC %>%
-    # Matching terms
-    filter(grepl(pattern = "Internal Combustion Engines", 
-                 perl = TRUE, ignore.case = TRUE, x = SCC.Level.One)) %>%
+    # Matching terms (It seems safe to assume that the question is particularly
+    # interested street-legal highway vehicles, rather than off-road vehicles
+    filter(grepl(pattern = "Highway Vehicles", 
+                 perl = TRUE, ignore.case = TRUE, x = SCC.Level.Two)) %>%
     select(SCC)
-
-# scc.good <- intersect(
-#     x = scc.good, 
-#     y = SCC %>%
-#         #Matching terms
-#         filter(grepl(pattern = "Vehicles", 
-#                      perl = TRUE, ignore.case = TRUE, x = SCC.Level.Four)) %>%
-#         select(SCC)
-# )
 
 # convert single column data.table/data.frame factors into array of character strings
 scc.good <- as.character(scc.good$SCC) 
@@ -42,15 +34,6 @@ NEI.p5.balt.motor <- NEI.p5 %>%
     filter(SCC == scc.good) %>% 
     filter(fips == "24510")
 
-## DROP ALL YEARS REQUIREMENT
-# good.obs.id <- NEI.p5.bal.motor[year == 1999, obs.id] %>%
-#     intersect(NEI.p5.bal.motor[year == 2002, obs.id]) %>%
-#     intersect(NEI.p5.bal.motor[year == 2005, obs.id]) %>%
-#     intersect(NEI.p5.bal.motor[year == 2008, obs.id])
-# 
-# NEI.p5.bal.motor.aY <- NEI.p5.bal.motor[obs.id == good.obs.id,]
-#
-
 # Reduce data into mean and median values for each year
 
 NEI.p5.plot <- NEI.p5.balt.motor %>%
@@ -58,7 +41,6 @@ NEI.p5.plot <- NEI.p5.balt.motor %>%
     summarise(Year = as.numeric(as.character(year)), 
               Mean.Emissions = mean(Emissions), 
               Median.Emissions = median(Emissions))
-
 
 png(filename = "plot5.png",width = 800, height = 600)
 
@@ -91,7 +73,6 @@ with(NEI.p5.plot,
 dev.off()
 
 close.screen(all.screens = TRUE)
-
 
 ################################################################################
 # Hadley Wickham has developed a number of important packages for R includding 
