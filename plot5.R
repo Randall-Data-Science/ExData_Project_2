@@ -7,6 +7,7 @@ library(tidyr)
 if (!exists("NEI") | !exists("SCC")) source("loadData.R")
 
 NEI.p5 <- NEI %>% 
+    filter(fips == "24510") %>%
     mutate(type = as.factor(type), year = as.factor(year)) %>%
     mutate(obs.id = paste(fips, SCC, type, sep = "-")) %>%
     mutate(obs.id.year = paste(year, obs.id, sep = "-"))
@@ -31,8 +32,7 @@ scc.good <- as.character(scc.good$SCC)
 
 # Filter the data
 NEI.p5.balt.motor <- NEI.p5 %>% 
-    filter(SCC == scc.good) %>% 
-    filter(fips == "24510")
+    filter(SCC == scc.good)
 
 # Reduce data into mean and median values for each year
 
@@ -41,6 +41,10 @@ NEI.p5.plot <- NEI.p5.balt.motor %>%
     summarise(Year = as.numeric(as.character(year)), 
               Mean.Emissions = mean(Emissions), 
               Median.Emissions = median(Emissions))
+
+while (length(dev.list()) > 0) {
+    dev.off()
+}
 
 png(filename = "plot5.png",width = 800, height = 600)
 

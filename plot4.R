@@ -1,7 +1,5 @@
 # See notes on libraries at end of documents
-library(data.table)
-library(dplyr)
-library(tidyr) 
+library(data.table); library(dplyr); library(tidyr) 
 
 #load data sets if not already in memory
 if (!exists("NEI") | !exists("SCC")) source("loadData.R")
@@ -13,12 +11,9 @@ NEI.p4 <- NEI %>%
 
 # Notes on strategy: 
 #
-# 1. Develop a list of coal-related SCCs. Find this by source level 3 or source
+# Develop a list of coal-related SCCs. Find this by source level 3 or source
 # level 4 with any of the following words: ("Coal", "Anthracite", 
 # "Bituminuous", "Lignite",  "Coke")
-#
-# 2. Still require that all measurement stations must have data for all four 
-# years.
 #
 
 # Develop a list of SCCs.
@@ -52,49 +47,12 @@ scc.good <- as.character(scc.good$SCC)
 NEI.p4.coal <- NEI.p4 %>% 
     filter(SCC == scc.good)
 
-good.obs.id <- NEI.p4.coal[year == 1999, obs.id] %>%
-    intersect(NEI.p4.coal[year == 2002, obs.id]) %>%
-    intersect(NEI.p4.coal[year == 2005, obs.id]) %>%
-    intersect(NEI.p4.coal[year == 2008, obs.id])
-
-NEI.p4.coal.aY <- NEI.p4.coal[obs.id == good.obs.id,]
-
-# table(NEI.p4.coal.aY$type)
-# 
-# NON-ROAD NONPOINT  ON-ROAD    POINT 
-# 0    11492        0     7468 
-
-# Reduce data into mean and median values for each year
-
-NEI.p4.small <- NEI.p4.coal.aY %>%
+NEI.p4.small <- NEI.p4.coal %>%
     group_by(year) %>%
     summarise(Year = as.numeric(as.character(year)), 
               Mean.Emissions = mean(Emissions), 
               Median.Emissions = median(Emissions))
 
-# with(NEI.p4.coal.aY, 
-#      boxplot(y = Emissions, x = as.numeric(as.character(year))
-#              )
-#  )
-# 
-# 
-# ggplot(data = NEI.p4.small, aes(x = Year, y = Mean.Emissions)) +
-#     geom_point() 
-# 
-# ggplot(data = NEI.p4.coal.aY, 
-#        aes(x = year, 
-#            y = Emissions+1)
-#        ) + 
-#     geom_bin2d() + 
-#     geom_violin() +
-#     scale_y_log10() +
-#     geom_line(x = year, y = mean(NEI.p4.coal.aY$Emissions))
-# 
-#      ggplot( 
-#       x = year, 
-#       y = Mean.Emissions) + 
-#     geom_point(x = year, y = Median.Emissions)
-# )
 
 png(filename = "plot4.png",width = 800, height = 600)
 
@@ -103,7 +61,7 @@ split.screen(figs = c(1, 1), screen = 1) # One plot in the first column
 split.screen(figs = c(2, 1), screen = 2) # Two plots in the second column
 
 screen(3)
-with(NEI.p4.coal.aY,
+with(NEI.p4.coal,
      boxplot((Emissions+1) ~ year, log="y", 
              main = "Distribution of Coal-Related\nEmissions",
              ylab = "Emissions")
@@ -127,7 +85,6 @@ with(NEI.p4.small,
 dev.off()
 
 close.screen(all.screens = TRUE)
-
 
 ################################################################################
 # Hadley Wickham has developed a number of important packages for R includding 
