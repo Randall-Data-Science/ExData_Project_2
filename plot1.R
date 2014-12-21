@@ -4,45 +4,37 @@ library(data.table); library(dplyr); library(tidyr)
 #load data sets if not already in memory
 if (!exists("NEI") | !exists("SCC")) source("loadData.R")
 
-# Create a copy of NEI table for this part one of the assignment, create factors
-# filter out data that are not present for all years, and then average data for 
-# specific points within a year
+# NOTE: I believe it is questionable not to normalize the data by measuring 
+# stations. That is, the gross number of measuring stations, or changes in 
+# location or type of measuring station could introduce bias. However, such 
+# qualitative adjustments are not requested for the purposes of this assignment,
+# and introducing such rigor would add confusion to the process of performing
+# peer assessments.
 
-# turn year and obs type into factors,
-# then create columns for grouping
+# Create a copy of NEI table for this part one of the assignment, create
+# factors, and then average data for specific points within a year, turn year
+# and obs type into factors, then create columns for grouping
 NEI.p1 <- NEI %>% 
     mutate(type = as.factor(type), year = as.factor(year)) %>%
     mutate(obs.id = paste(fips, SCC, type, sep = "-")) %>%
     mutate(obs.id.year = paste(year, obs.id, sep = "-"))
 
-# Find observation types that were measured in all years
-good.obs.id <- NEI.p1[year == 1999, obs.id] %>%
-    intersect(NEI.p1[year == 2002, obs.id]) %>%
-    intersect(NEI.p1[year == 2005, obs.id]) %>%
-    intersect(NEI.p1[year == 2008, obs.id])
-
-# only keep observation types measured in all years
-NEI.p1.aY <- NEI.p1 %>% filter(obs.id %in% good.obs.id)
-
 # Average multiple measurements of a single type within one year together
-NEI.p1.aY <- NEI.p1.aY %>% group_by(obs.id.year)
-NEI.p1.aY <- NEI.p1.aY %>% summarise(fips, SCC, Pollutant, type, year, obs.id,  
+NEI.p1 <- NEI.p1 %>% group_by(obs.id.year)
+NEI.p1 <- NEI.p1 %>% summarise(fips, SCC, Pollutant, type, year, obs.id,  
                                      Emissions = mean(Emissions))
 
-# I think summarise is supposed to drop duplicate rows when the 
-# .collapse option is set to TRUE, but it doesn't work. Therefore:
-NEI.p1.aY = NEI.p1.aY[!duplicated(NEI.p1.aY)]
-
-#create tiny table for graph
-p1.data <- NEI.p1.aY %>%
+# Create input data for plotting -- aggregate data by year, and turn the years
+# back into numeric data
+p1.data <- NEI.p1 %>%
     group_by(year) %>%
     summarise(Emissions = mean(Emissions)) %>%
     mutate(year = as.numeric(as.character(year)))
 
 png(filename = "plot1.png", width = 600, height = 400)
-
-plot(p1.data, type = "b", xaxp = c(1999, 2008, 3))
-title(main = "Levels of PM_2.5 (1999-2008)")
+    
+    plot(p1.data, type = "b", xaxp = c(1999, 2008, 3))
+    title(main = "Levels of PM_2.5 (1999-2008)")
 
 dev.off()
 
@@ -59,5 +51,4 @@ dev.off()
 #
 # It is also worth noting that the dplyr package imports the magrittr package
 # which intorduces the %>% operator for piping data and functions.
-#
 ################################################################################
